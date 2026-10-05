@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Assignment Python environment
+.venv311/
+
+# Microsoft Office lock files
+~$*.docx

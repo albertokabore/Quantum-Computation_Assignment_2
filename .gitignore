@@ -224,3 +224,6 @@ __marimo__/
 
 # Microsoft Office lock files
 ~$*.docx
+
+# Superseded local Word report (may remain open in Word)
+/Assignment2_Report_Revised.docx

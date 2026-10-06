@@ -14,9 +14,13 @@ py -3.11 -m venv --system-site-packages .venv311
 .\.venv311\Scripts\python.exe -m ipykernel install --sys-prefix --name quantum-assignment-2 --display-name "Quantum Assignment 2 (Python 3.11)"
 ```
 
-The assignment files are `Assignment2_Quantum_Circuits.ipynb` and
-`Assignment2_Report_Revised.docx`. The revised report includes the normalization
-proof, H/Y/Z derivations, runnable code with matching outputs, generated circuit
-diagrams and measurement histograms, and comparison with predicted probabilities.
-All six images embedded in the original report are preserved in the revision.
-The `figures` folder contains notebook outputs.
+The assignment files are [Assignment2_Quantum_Circuits.ipynb](Assignment2_Quantum_Circuits.ipynb)
+and the PDF report [Kabore_Albert_Module_2_Assignment.pdf](Kabore_Albert_Module_2_Assignment.pdf).
+The report includes the normalization proof, H/Y/Z derivations, runnable code with
+matching outputs, circuit diagrams, measurement histograms, and comparison with
+predicted probabilities. The igures folder contains notebook outputs.
+
+The original assignment screenshot is available in the VS Code project as
+[figures/assignment_instructions.png](figures/assignment_instructions.png).
+
+![Original assignment questions](figures/assignment_instructions.png)

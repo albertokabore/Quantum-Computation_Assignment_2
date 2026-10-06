@@ -15,7 +15,8 @@ py -3.11 -m venv --system-site-packages .venv311
 ```
 
 The assignment files are `Assignment2_Quantum_Circuits.ipynb` and
-`Assignment2_Report_Final.docx`. This corrected report includes the normalization
+`Assignment2_Report_Revised.docx`. The revised report includes the normalization
 proof, H/Y/Z derivations, runnable code with matching outputs, generated circuit
 diagrams and measurement histograms, and comparison with predicted probabilities.
-It contains no screenshots. The `figures` folder contains notebook outputs.
+All six images embedded in the original report are preserved in the revision.
+The `figures` folder contains notebook outputs.

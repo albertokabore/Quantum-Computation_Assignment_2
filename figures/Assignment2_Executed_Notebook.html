@@ -7696,6 +7696,12 @@ Qiskit Statevector.is_valid(): True
 
     <span class="n">fig_h</span> <span class="o">=</span> <span class="n">plot_histogram</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">gate_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">|0&gt;  (</span><span class="si">{</span><span class="n">SHOTS</span><span class="si">}</span><span class="s2"> shots)"</span><span class="p">,</span>
                            <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">))</span>
+    <span class="c1"># Verify the displayed histogram bars against the measured counts.</span>
+    <span class="n">bar_heights</span> <span class="o">=</span> <span class="p">[</span><span class="n">bar</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span> <span class="k">for</span> <span class="n">bar</span> <span class="ow">in</span> <span class="n">fig_h</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">patches</span><span class="p">]</span>
+    <span class="c1"># Qiskit omits zero-height bars for outcomes with no counts.</span>
+    <span class="n">plotted_counts</span> <span class="o">=</span> <span class="p">[</span><span class="n">counts</span><span class="p">[</span><span class="n">label</span><span class="o">.</span><span class="n">get_text</span><span class="p">()]</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">fig_h</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">()</span>
+                      <span class="k">if</span> <span class="n">counts</span><span class="p">[</span><span class="n">label</span><span class="o">.</span><span class="n">get_text</span><span class="p">()]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">bar_heights</span><span class="p">,</span> <span class="n">plotted_counts</span><span class="p">)</span>
     <span class="n">fig_h</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">"figures/histogram_</span><span class="si">{</span><span class="n">gate_name</span><span class="si">}</span><span class="s2">.png"</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">"tight"</span><span class="p">)</span>
     <span class="n">display</span><span class="p">(</span><span class="n">fig_h</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig_h</span><span class="p">)</span>
@@ -7921,6 +7927,13 @@ Observed   f(0) = 1.0000   f(1) = 0.0000   counts = {'0': 1024, '1': 0}
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h4 id="Verification---predictions-and-measurements">Verification - predictions and measurements<a class="anchor-link" href="#Verification---predictions-and-measurements">¶</a></h4><p>Compare the predicted probabilities with the observed frequencies (counts divided by 1024). H gives approximately equal frequencies, with finite sampling fluctuations. Y always gives 1 and Z always gives 0 in this ideal simulation. The checks below also compare the computed state vectors with the hand-derived amplitudes.</p>
+<p>For H, the number of <code>0</code> outcomes is binomial with mean $Np=512$ and
+standard deviation $\sqrt{Np(1-p)}=16$ for $N=1024$, $p=1/2$.
+The observed 526 is only $(526-512)/16=0.875$ standard deviations above
+its mean, consistent with ordinary sampling variation. The code checks
+this agreement with a broad five-standard-deviation sanity bound and verifies
+that each plotted bar equals its measured count. Dividing these counts by
+the shot total gives the observed frequencies used for comparison with probabilities.</p>
 </div>
 </div>
 </div>
@@ -7954,6 +7967,15 @@ Observed   f(0) = 1.0000   f(1) = 0.0000   counts = {'0': 1024, '1': 0}
 <span class="c1"># Deterministic outcomes must match exactly.</span>
 <span class="k">assert</span> <span class="n">counts_y</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"0"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">:</span> <span class="n">SHOTS</span><span class="p">}</span>
 <span class="k">assert</span> <span class="n">counts_z</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"0"</span><span class="p">:</span> <span class="n">SHOTS</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+<span class="c1"># H counts follow Binomial(SHOTS, 1/2): mean SHOTS/2, std sqrt(SHOTS/4).</span>
+<span class="n">expected_h_count</span> <span class="o">=</span> <span class="n">SHOTS</span> <span class="o">/</span> <span class="mi">2</span>
+<span class="n">sigma_h_count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">SHOTS</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="n">h_deviation</span> <span class="o">=</span> <span class="p">(</span><span class="n">counts_h</span><span class="p">[</span><span class="s2">"0"</span><span class="p">]</span> <span class="o">-</span> <span class="n">expected_h_count</span><span class="p">)</span> <span class="o">/</span> <span class="n">sigma_h_count</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">H count(0): expected </span><span class="si">{</span><span class="n">expected_h_count</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">, observed </span><span class="si">{</span><span class="n">counts_h</span><span class="p">[</span><span class="s1">'0'</span><span class="p">]</span><span class="si">}</span><span class="s2">; "</span>
+      <span class="sa">f</span><span class="s2">"deviation = </span><span class="si">{</span><span class="n">h_deviation</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> standard deviations."</span><span class="p">)</span>
+<span class="c1"># A broad sanity check for sampling agreement, not a proof of the distribution.</span>
+<span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">h_deviation</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">"H histogram is unusually far from the predicted 50/50 distribution"</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Histogram bar heights match the observed counts for all three circuits."</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Exact states match the hand derivations; sampled histograms are consistent with the predictions."</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -7971,6 +7993,9 @@ Observed   f(0) = 1.0000   f(1) = 0.0000   counts = {'0': 1024, '1': 0}
 H|0&gt;          0.500      0.500      0.514      0.486  {'0': 526, '1': 498}
 Y|0&gt;          0.000      1.000      0.000      1.000   {'0': 0, '1': 1024}
 Z|0&gt;          1.000      0.000      1.000      0.000   {'0': 1024, '1': 0}
+
+H count(0): expected 512, observed 526; deviation = 0.875 standard deviations.
+Histogram bar heights match the observed counts for all three circuits.
 
 Exact states match the hand derivations; sampled histograms are consistent with the predictions.
 </pre>
